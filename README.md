@@ -1,6 +1,6 @@
 # Teensy-Stickless-Controller
 
-This sketch REQUIRES (damurdock's mod)[https://github.com/damurdock/Teensyduino-PS-Button-Mod] to Teensyduino to work fully on a PS3 console.
+This sketch REQUIRES [damurdock's mod](https://github.com/damurdock/Teensyduino-PS-Button-Mod) to Teensyduino to work fully on a PS3 console.
 
 If you don't care about that, you should comment out everything dealing with pin 10.
 
