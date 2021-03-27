@@ -17,49 +17,48 @@
 #include <Bounce.h>
 
 // Create Bounce objects for each button.
-Bounce button0 = Bounce(0, 10);
-Bounce button1 = Bounce(1, 10);  // 10 = 10 ms debounce time
-Bounce button2 = Bounce(2, 10);  // which is appropriate for
-Bounce button3 = Bounce(3, 10);  // most mechanical pushbuttons
-Bounce button4 = Bounce(4, 10);
-Bounce button5 = Bounce(5, 10);
-Bounce button6 = Bounce(6, 10);
-Bounce button7 = Bounce(7, 10);
-Bounce button8 = Bounce(8, 10);
-Bounce button9 = Bounce(9, 10);
-Bounce button10 = Bounce(10, 10);
-Bounce buttonup= Bounce(11, 10);  
-Bounce buttondown = Bounce(12, 10);  
-Bounce buttonleft = Bounce(13, 10);  
-Bounce buttonright = Bounce(14, 10);
-int up,down,left,right,stick;
+//                        button number, proper name
+Bounce button0 = Bounce(0, 10); // 1, Square
+Bounce button1 = Bounce(1, 10); // 2, Cross
+Bounce button2 = Bounce(2, 10); // 3, Circle
+Bounce button3 = Bounce(3, 10); // 4, Triangle
+Bounce button4 = Bounce(4, 10); // 5, L1
+Bounce button5 = Bounce(5, 10); // 6, R1
+Bounce button6 = Bounce(6, 10); // 7, L2
+Bounce button7 = Bounce(7, 10); // 8, R2
+Bounce button8 = Bounce(8, 10); // 9, Select/Back
+Bounce button9 = Bounce(9, 10); // 10, Start
+Bounce button10 = Bounce(10, 10); // 13, Home Button
+void hatrw();
+const uint8_t joy[] = {14,13,12,11}; //change these pins to right, left, up, down, in order.
 
 void setup() {
-  Joystick.hat(-1);
+  Serial.begin(9600);
   // Configure the pins for input mode with pullup resistors.
   // The pushbuttons connect from each pin to ground.  When
   // the button is pressed, the pin reads LOW.
-  pinMode(0, INPUT_PULLUP);  // 1, Square
-  pinMode(1, INPUT_PULLUP);  // 2, Cross
-  pinMode(2, INPUT_PULLUP);  // 3, Circle
-  pinMode(3, INPUT_PULLUP);  // 4, Triangle
-  pinMode(4, INPUT_PULLUP);  // 5, L1
-  pinMode(5, INPUT_PULLUP);  // 6, R1
-  pinMode(6, INPUT_PULLUP);  // 7, L2
-  pinMode(7, INPUT_PULLUP);  // 8, R2
-  pinMode(8, INPUT_PULLUP);  // 9, Select/Back
-  pinMode(9, INPUT_PULLUP);  // 10, Start
-  pinMode(10, INPUT_PULLUP); // 13, Home Button
-  pinMode(11, INPUT_PULLUP); // Up
-  pinMode(12, INPUT_PULLUP); // Down
-  pinMode(13, INPUT_PULLUP); // Left 
-  pinMode(14, INPUT_PULLUP); // Right
-  pinMode(15, INPUT_PULLUP); // Dpad/left stick switch
+  pinMode(0, INPUT_PULLUP);  
+  pinMode(1, INPUT_PULLUP); 
+  pinMode(2, INPUT_PULLUP);  
+  pinMode(3, INPUT_PULLUP);
+  pinMode(4, INPUT_PULLUP);
+  pinMode(5, INPUT_PULLUP); 
+  pinMode(6, INPUT_PULLUP); 
+  pinMode(7, INPUT_PULLUP);  
+  pinMode(8, INPUT_PULLUP);  
+  pinMode(9, INPUT_PULLUP);  
+  pinMode(10, INPUT_PULLUP);
+  pinMode(11, INPUT_PULLUP); 
+  pinMode(12, INPUT_PULLUP);
+  pinMode(13, INPUT_PULLUP);  
+  pinMode(14, INPUT_PULLUP);
+  pinMode(15, INPUT_PULLUP); 
 }
 
 void loop() {
-
-  int dpadSwitch = digitalRead(15);
+  hatrw();
+  Joystick.send_now();
+  delay(1);
   // Update all the buttons.  There should not be any long
   // delays in loop(), so this runs repetitively at a rate
   // faster than the buttons could be pressed and released.
@@ -74,10 +73,6 @@ void loop() {
   button8.update();
   button9.update();
   button10.update();
-  buttonup.update();  
-  buttondown.update();   
-  buttonleft.update();
-  buttonright.update();
 
   // Check each button for "falling" edge. 
   if (button0.fallingEdge()) {
@@ -113,18 +108,7 @@ void loop() {
   if (button10.fallingEdge()) {
     Joystick.button(13, 1);
   }
-  if (buttonup.fallingEdge()) {
-    int up = 1;
-  }
-  if (buttondown.fallingEdge()) {
-    int down = 1;
-  }
-  if (buttonleft.fallingEdge()) {
-    int left = 1;
-  }
-  if (buttonright.fallingEdge()) {
-    int right = 1;
-  }
+
   
 
   // Check each button for "rising" edge
@@ -161,126 +145,136 @@ void loop() {
   if (button10.risingEdge()) {
     Joystick.button(13, 0);
   }
-  if (buttonup.risingEdge()) {
-    int up = 0;
-  }
-  if (buttondown.risingEdge()) {
-    int down = 0;
-  }
-  if (buttonleft.risingEdge()) {
-    int left = 0;
-  }
-  if (buttonright.risingEdge()) {
-    int right = 0;
-  }
-  
-  // Dpad/left stick shit
-  // god this was annoying and there's 100% a better way to do it
-  // but tbh, i don't care enough to do it that better way. 
-  // variable stick uses numpad notation
-  //    ╔════╗
-  //    ║7  8  9║
-  //    ║4  5  6║
-  //    ║1  2  3║
-  //    ╚════╝
 
-                                                    // UDLR
-  if (down+left == 2 && up+right == 0) {stick = 1;} // 0110
-  if (down == 1 && up+left+right == 0) {stick = 2;} // 0100
-  if (down+right == 2 && up+left == 0) {stick = 3;} // 0101
-  if (left == 1 && up+down+right == 0) {stick = 4;} // 0010
-  if (up+down+right+left == 0) {stick = 5;}         // 0000
-  if (right == 1 && up+right+left == 0) {stick = 6;}// 0001
-  if (up+left == 2 && down+right == 0) {stick = 7;} // 1010
-  if (up == 1 && down+right+left == 0) {stick = 8;} // 1000
-  if (up+right == 2 && down+left == 0) {stick = 9;} // 1001
-  // SOCD cleaner stuff. sorted.
-  if (up+down == 2 && left+right == 0) {stick = 8;} // 1100 
-  if (up+down+left == 3 && right == 0) {stick = 7;} // 1110
-  if (up+down+right == 3 && left == 0) {stick = 9;} // 1101
-  if (left+right == 2 && up+down == 0) {stick = 5;} // 0011
-  if (up+left+right == 3 && down == 0) {stick = 8;} // 1011
-  if (down+left+right == 3 && up == 0) {stick = 2;} // 0111
-  if (up+down+left+right == 4 ) {stick = 8;}        // 1111
-  
-  // now time for the actual _output_ shit :)
-  if(dpadSwitch == LOW) { // if switch is ON use DPad...
-    switch (stick) {
-      case 1:
-        Joystick.hat(225);
+}
+  void hatrw()
+  {
+  uint8_t read = 0;
+  for (int i=0; i<4; i++) {
+      read |= digitalRead(joy[i])  << i;
+      Serial.print(digitalRead(joy[i])  << i);
+    }
+    //1,2,4,8
+    //right left down up
+    //when button is pressed it stops adding to the total
+    // i.e. if i press up the total is 1+2+4, 7
+  if(digitalRead(15) == 0) {
+    
+    switch (read)
+    {
+      case 14: //right
+      Joystick.hat(90);
       break;
-      case 2:
-        Joystick.hat(180);
+      case 13: //left
+      Joystick.hat(270);
       break;
-      case 3:
-        Joystick.hat(135);
+      case 11: //down
+      Joystick.hat(180);
       break;
-      case 4:
-        Joystick.hat(270);
+      case 7: //up
+      Joystick.hat(0);
       break;
-      case 5:
-        Joystick.hat(-1);
+      case 6: //up right
+      Joystick.hat(45);
       break;
-      case 6:
-        Joystick.hat(90);
+      case 10: //down right
+      Joystick.hat(135);
       break;
-      case 7:
-        Joystick.hat(315);
+      case 5: //left up
+      Joystick.hat(315);
       break;
-      case 8:
-        Joystick.hat(0);
+      case 9: //left down
+      Joystick.hat(225);
       break;
-      case 9:
-        Joystick.hat(45);
+      case 3: //up+down
+      Joystick.hat(0);
+      break;
+      case 1: //up,down,left
+      Joystick.hat(315);
+      break;
+      case 2: //up,down,right
+      Joystick.hat(45);
+      break;
+      case 4: //up,left,right
+      Joystick.hat(0);
+      break;
+      case 8: //down,left,right
+      Joystick.hat(180);
+      break;
+      case 0: //up,down,left,right
+      Joystick.hat(0);
       break;
       default:
-        Joystick.hat(-1);
+      Joystick.X(512);
+      Joystick.Y(512);
+      Joystick.hat(-1);
       break;
     }
   }
-  else { // ... otherwise use the right stick.
-    switch (stick) {   
-      case 1:
-        Joystick.X(0);
-        Joystick.Y(0);
+  else {
+    switch (read)
+    {
+      case 14: //right
+      Joystick.X(1023);
+      Joystick.Y(512);
       break;
-      case 2:
-        Joystick.X(512);
-        Joystick.Y(0);
+      case 13: //left
+      Joystick.X(0);
+      Joystick.Y(512);
       break;
-      case 3:
-        Joystick.X(1023);
-        Joystick.Y(0);
+      case 11: //down
+      Joystick.X(512);
+      Joystick.Y(0);
       break;
-      case 4:
-        Joystick.X(0);
-        Joystick.Y(512);
+      case 7: //up
+      Joystick.X(512);
+      Joystick.Y(0);
       break;
-      case 5:
-        Joystick.X(512);
-        Joystick.Y(512);
+      case 6: //up right
+      Joystick.X(1023);
+      Joystick.Y(0);
       break;
-      case 6:
-        Joystick.X(1023);
-        Joystick.Y(512);
+      case 10: //down right
+      Joystick.X(1023);
+      Joystick.Y(1023);
       break;
-      case 7:
-        Joystick.X(0);
-        Joystick.Y(1023);
+      case 5: //left up
+      Joystick.X(0);
+      Joystick.Y(0);
       break;
-      case 8:
-        Joystick.X(512);
-        Joystick.Y(1023);
+      case 9: //left down
+      Joystick.X(0);
+      Joystick.Y(1023);
       break;
-      case 9:
-        Joystick.X(1023);
-        Joystick.Y(1023);
+      case 3: //up+down
+      Joystick.X(512);
+      Joystick.Y(0);
+      break;
+      case 1: //up,down,left
+      Joystick.X(0);
+      Joystick.Y(0);
+      break;
+      case 2: //up,down,right
+      Joystick.X(1023);
+      Joystick.Y(0);
+      break;
+      case 4: //up,left,right
+      Joystick.X(512);
+      Joystick.Y(0);
+      break;
+      case 8: //down,left,right
+      Joystick.X(512);
+      Joystick.Y(1023);
+      break;
+      case 0: //up,down,left,right
+      Joystick.X(512);
+      Joystick.Y(0);
       break;
       default:
-        Joystick.X(512);
-        Joystick.Y(512);
+      Joystick.X(512);
+      Joystick.Y(512);
+      Joystick.hat(-1);
       break;
-      
-    } 
+    }
   }
 }
