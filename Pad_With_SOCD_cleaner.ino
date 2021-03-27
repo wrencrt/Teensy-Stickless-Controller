@@ -224,7 +224,7 @@ void loop() {
       break;
       case 11: //down
       Joystick.X(512);
-      Joystick.Y(0);
+      Joystick.Y(1023);
       break;
       case 7: //up
       Joystick.X(512);
