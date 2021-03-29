@@ -4,6 +4,8 @@ This sketch REQUIRES [damurdock's mod](https://github.com/damurdock/Teensyduino-
 
 If you don't care about that, you should comment out everything dealing with pin 10.
 
+It has two options for SOCD cleaners, last win and neutral.
+
 ## Requirements
 
 I built this for a Teensy LC. It uses pins 0-14 (the pins are labeled in the .ino) and a switch to change between DPad and Left Stick. 
